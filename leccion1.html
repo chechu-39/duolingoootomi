@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colores</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <!-- Barra de progreso -->
+    <div class="barra-progreso">
+        <div class="barra-progreso__relleno" id="progreso"></div>
+    </div>
+    <h3 class="morado">Palabra nueva</h3>
+    <h1>¿Cuál de estos es el color rosa?</h1>
+
+    <div class="container">
+
+        <!-- Tarjeta 1: Roxa (respuesta correcta) -->
+        <div class="card" data-correcta="true">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScfbn8wO4EHTJZv_75P0WNrfiE9xh2SjFwOlQNFPTqCg&s=10" alt="Flor de loto">
+            <h3>Roxa</h3>
+            <audio controls preload="auto">
+                <source src="/audio/Roxa.ogg" type="audio/ogg">
+           
+                Tu navegador no soporta audio.
+            </audio>
+            <button class="opcion">1</button>
+        </div>
+
+        <!-- Tarjeta 2: Naranxa -->
+        <div class="card">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj5KLOlaDM5yeCHQZclTtzi2ZltHDqYk3c-ucJyP_MOQ&s=10" alt="Naranja">
+            <h3>Naranxa</h3>
+              <audio controls preload="auto">
+                <source src="/audio/Naranxa.ogg" type="audio/ogg">
+           
+                Tu navegador no soporta audio.
+            </audio>
+            <button class="opcion">2</button>
+        </div>
+
+        <!-- Tarjeta 3: Boxo -->
+        <div class="card">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSMmR9YqppF4px5GW76CihX6ABtcSn6zHDP-twV5dXBA&s=10" alt="Café">
+            <h3>Boxo</h3>
+              <audio controls preload="auto">
+                <source src="/audio/boxo.ogg" type="audio/ogg">
+           
+                Tu navegador no soporta audio.
+            </audio>
+            <button class="opcion">4</button>
+        </div>
+
+    </div>
+
+    <div class="acciones">
+        <button id="comprobar" class="comprobar">Comprobar</button>
+        <button id="saltar" class="saltar">Saltar</button>
+    </div>
+
+    <script>
+       // =============================
+// CONFIGURACIÓN
+// =============================
+const TOTAL_PREGUNTAS = 3;   // 👈 cambia este número según cuántas preguntas tengas
+let preguntasContestadas = 0;
+let seleccionada = null;
+
+const progreso = document.getElementById('progreso');
+
+// =============================
+// ACTUALIZAR BARRA
+// =============================
+function actualizarProgreso() {
+    const porcentaje = (preguntasContestadas / TOTAL_PREGUNTAS) * 100;
+    progreso.style.width = porcentaje + '%';
+}
+
+// Inicializa en 0
+actualizarProgreso();
+
+// =============================
+// SELECCIONAR TARJETA
+// =============================
+document.querySelectorAll('.card button').forEach(boton => {
+    boton.addEventListener('click', () => {
+        const card = boton.closest('.card');
+
+        // Quitar selección previa
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('seleccionada'));
+
+        // Marcar la nueva
+        card.classList.add('seleccionada');
+        seleccionada = card;
+
+        // Reproducir audio si tiene
+        const audio = card.querySelector('audio');
+        if (audio) {
+            audio.currentTime = 0;
+            audio.play().catch(err => console.log('Audio bloqueado:', err));
+        }
+    });
+});
+
+// =============================
+// BOTÓN COMPROBAR
+// =============================
+document.getElementById('comprobar').addEventListener('click', () => {
+    if (!seleccionada) {
+        alert('👆 Selecciona una opción primero');
+        return;
+    }
+
+    // Evitar contar dos veces la misma tarjeta
+    if (seleccionada.dataset.respondida === 'true') {
+        alert('Ya contestaste esta pregunta');
+        return;
+    }
+
+    // Marcar como respondida
+    seleccionada.dataset.respondida = 'true';
+    seleccionada.classList.remove('correcta', 'incorrecta');
+
+    if (seleccionada.dataset.correcta === 'true') {
+        seleccionada.classList.add('correcta');
+        alert('🎉 ¡Correcto! Es el color rosa.');
+    } else {
+        seleccionada.classList.add('incorrecta');
+        alert('❌ Incorrecto, intenta otra vez.');
+    }
+
+    // 👉 Avanzar la barra de progreso
+    preguntasContestadas++;
+    actualizarProgreso();
+
+    // Si ya terminó todo
+    if (preguntasContestadas >= TOTAL_PREGUNTAS) {
+        setTimeout(() => {
+            alert('✅ ¡Terminaste todas las preguntas!');
+        }, 300);
+    }
+
+    // Quitar selección para la siguiente pregunta
+    seleccionada = null;
+});
+
+// =============================
+// BOTÓN SALTAR
+// =============================
+document.getElementById('saltar').addEventListener('click', () => {
+    // Saltar también cuenta como "contestada" (o no, según prefieras)
+    preguntasContestadas++;
+    actualizarProgreso();
+
+    alert('⏭️ Saltando a la siguiente pregunta...');
+});
+    </script>
+</body>
+</html>
